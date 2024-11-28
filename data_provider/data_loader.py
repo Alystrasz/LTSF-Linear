@@ -188,6 +188,15 @@ class Dataset_ETT_minute(Dataset):
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
 
+class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
+    def __init__(self, root_path, flag='train', size=None,
+                 features='S', data_path='ETTm1.csv',
+                 target='OT', scale=True, timeenc=0, freq='t', train_only=False,
+                 preserve_ratio=1):
+        super().__init__(root_path, flag, size, features, data_path, target, scale, timeenc, freq, train_only)
+        self.preserve_ratio = preserve_ratio
+        if preserve_ratio > 1:
+            print("Dataset will need compression!")
 
 class Dataset_Custom(Dataset):
     def __init__(self, root_path, flag='train', size=None,

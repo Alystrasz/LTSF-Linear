@@ -35,6 +35,10 @@ parser.add_argument('--seq_len', type=int, default=96, help='input sequence leng
 parser.add_argument('--label_len', type=int, default=48, help='start token length')
 parser.add_argument('--pred_len', type=int, default=96, help='prediction sequence length')
 
+# compression
+parser.add_argument('--enable_compression', action='store_true', default=False, help='enables compression experiments')
+parser.add_argument('--preserve_ratio', type=int, default=0, help='dataset reduction ratio (keeps one point out of X points)')
+
 
 # DLinear
 parser.add_argument('--individual', action='store_true', default=False, help='DLinear: a linear layer for each variate(channel) individually')
@@ -97,7 +101,7 @@ Exp = Exp_Main
 if args.is_training:
     for ii in range(args.itr):
         # setting record of experiments
-        setting = '{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_{}_{}'.format(
+        setting = '{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_{}_{}_pm{}_{}'.format(
             args.model_id,
             args.model,
             args.data,
@@ -113,7 +117,9 @@ if args.is_training:
             args.factor,
             args.embed,
             args.distil,
-            args.des, ii)
+            args.des,
+            args.enable_compression,
+            args.preserve_ratio, ii)
 
         exp = Exp(args)  # set experiments
         print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
