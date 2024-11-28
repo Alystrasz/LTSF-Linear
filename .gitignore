@@ -6,3 +6,10 @@ test_results/
 results/
 logs/
 .DS_Store
+
+# venv
+bin/
+share/
+lib/
+lib64
+lib64/
