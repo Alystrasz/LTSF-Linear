@@ -32,7 +32,8 @@ do
     echo "Started at" $(date) >$filename
     echo "" >>$filename
 
-    python -u run_longExp.py \
+    if $debug; then
+        python -u run_longExp.py \
         --is_training 1 \
         --root_path ./dataset/ \
         --data_path ETTm1.csv \
@@ -45,7 +46,23 @@ do
         --des 'Exp' \
         --enable_compression \
         --preserve_ratio $ratio \
-        --itr 1 --batch_size 8 --learning_rate 0.0001 --feature S >>$filename
+        --itr 1 --batch_size 8 --learning_rate 0.0001 --feature S
+    else
+        python -u run_longExp.py \
+            --is_training 1 \
+            --root_path ./dataset/ \
+            --data_path ETTm1.csv \
+            --model_id ETTm1_336_720 \
+            --model $model_name \
+            --data ETTm1_compression \
+            --seq_len 336 \
+            --pred_len 720 \
+            --enc_in 1 \
+            --des 'Exp' \
+            --enable_compression \
+            --preserve_ratio $ratio \
+            --itr 1 --batch_size 8 --learning_rate 0.0001 --feature S >>$filename
+    fi
 
     echo "" >>$filename
     echo "Finished at" $(date) >>$filename
