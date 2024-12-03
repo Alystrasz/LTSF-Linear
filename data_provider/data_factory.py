@@ -1,5 +1,6 @@
 from data_provider.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Compressed_ETT_minute, Dataset_Custom, Dataset_Pred
 from torch.utils.data import DataLoader
+from torch.utils.data.sampler import SubsetRandomSampler
 
 data_dict = {
     'ETTh1': Dataset_ETT_hour,
@@ -7,7 +8,7 @@ data_dict = {
     'ETTm1': Dataset_ETT_minute,
     'ETTm2': Dataset_ETT_minute,
     'custom': Dataset_Custom,
-    'ETTm1_compression': Dataset_Compressed_ETT_minute
+    'ETTm1_compression': Dataset_ETT_minute #Dataset_Compressed_ETT_minute
 }
 
 
@@ -33,38 +34,69 @@ def data_provider(args, flag):
         batch_size = args.batch_size
         freq = args.freq
 
-    # Separate compression dataset from other classes to pass additional parameters
-    if args.enable_compression:
-        data_set = Dataset_Compressed_ETT_minute(
-            root_path=args.root_path,
-            data_path=args.data_path,
-            flag=flag,
-            size=[args.seq_len, args.label_len, args.pred_len],
-            features=args.features,
-            target=args.target,
-            timeenc=timeenc,
-            freq=freq,
-            train_only=train_only,
-            preserve_ratio=args.preserve_ratio
-        )
-    else:
-        data_set = Data(
-            root_path=args.root_path,
-            data_path=args.data_path,
-            flag=flag,
-            size=[args.seq_len, args.label_len, args.pred_len],
-            features=args.features,
-            target=args.target,
-            timeenc=timeenc,
-            freq=freq,
-            train_only=train_only
-        )
+    # # Separate compression dataset from other classes to pass additional parameters
+    # if args.enable_compression:
+    #     data_set = Dataset_Compressed_ETT_minute(
+    #         root_path=args.root_path,
+    #         data_path=args.data_path,
+    #         flag=flag,
+    #         size=[args.seq_len, args.label_len, args.pred_len],
+    #         features=args.features,
+    #         target=args.target,
+    #         timeenc=timeenc,
+    #         freq=freq,
+    #         train_only=train_only,
+    #         preserve_ratio=args.preserve_ratio
+    #     )
+    # else:
+    #     data_set = Data(
+    #         root_path=args.root_path,
+    #         data_path=args.data_path,
+    #         flag=flag,
+    #         size=[args.seq_len, args.label_len, args.pred_len],
+    #         features=args.features,
+    #         target=args.target,
+    #         timeenc=timeenc,
+    #         freq=freq,
+    #         train_only=train_only
+    #     )
+    #
+    # print(flag, len(data_set))
+    # data_loader = DataLoader(
+    #     data_set,
+    #     batch_size=batch_size,
+    #     shuffle=shuffle_flag,
+    #     num_workers=args.num_workers,
+    #     drop_last=drop_last)
+    # return data_set, data_loader
+
+
+    data_set = Data(
+        root_path=args.root_path,
+        data_path=args.data_path,
+        flag=flag,
+        size=[args.seq_len, args.label_len, args.pred_len],
+        features=args.features,
+        target=args.target,
+        timeenc=timeenc,
+        freq=freq,
+        train_only=train_only
+    )
 
     print(flag, len(data_set))
-    data_loader = DataLoader(
-        data_set,
-        batch_size=batch_size,
-        shuffle=shuffle_flag,
-        num_workers=args.num_workers,
-        drop_last=drop_last)
+    if flag != "test":
+        compression_sampler = SubsetRandomSampler(range(0, int(len(data_set)/args.preserve_ratio)))
+        data_loader = DataLoader(
+            data_set,
+            batch_size=batch_size,
+            sampler=compression_sampler,
+            num_workers=args.num_workers,
+            drop_last=drop_last)
+    else:
+        data_loader = DataLoader(
+            data_set,
+            batch_size=batch_size,
+            num_workers=args.num_workers,
+            drop_last=drop_last)
+
     return data_set, data_loader
