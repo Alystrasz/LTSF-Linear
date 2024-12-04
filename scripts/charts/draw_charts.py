@@ -4,10 +4,11 @@ def draw_electricity_fli_results():
     fig = plt.figure()
     plt.title("Accuracy of NLinear model while keeping first points")
     plt.ylabel('MSE')
-    plt.xlabel('Compression rate')
+    plt.xlabel('Compression ratio')
 
     train_len = 33505
     val_len = 10801
+    total_len = train_len + val_len
 
     # Compressing train + val datasets
     tv_results = [
@@ -33,7 +34,15 @@ def draw_electricity_fli_results():
         {"ratio": 524288, "mse":0.11079414933919907, "mae":0.2577025294303894},
         {"ratio": 1048576, "mse":0.11079414933919907, "mae":0.2577025294303894},
     ]
-    ratios = [r["ratio"] for r in tv_results]
+    # ratios = [r["ratio"] for r in tv_results]
+    # ratios = [total_len / (int(val_len/r["ratio"]) + int(train_len/r["ratio"])) for r in tv_results]
+    ratios = []
+    for res in tv_results:
+        r = res["ratio"]
+        compressed_len = int(val_len/r) + int(train_len/r)
+        if compressed_len == 0:
+            compressed_len = 1
+        ratios.append(total_len / compressed_len)
     mses = [r["mse"] for r in tv_results]
     plt.plot(ratios, mses, label="Compressing train+val datasets")
 
@@ -61,7 +70,14 @@ def draw_electricity_fli_results():
         {"ratio": 524288, "mse":0.11079414933919907, "mae":0.2577025294303894},
         {"ratio": 1048576, "mse":0.11079414933919907, "mae":0.2577025294303894},
     ]
-    to_ratios = [r["ratio"] for r in to_results]
+    # to_ratios = [r["ratio"] for r in to_results]
+    to_ratios = []
+    for res in to_results:
+        r = res["ratio"]
+        compressed_len = val_len + int(train_len/r)
+        if compressed_len == 0:
+            compressed_len = 1
+        to_ratios.append(total_len / compressed_len)
     to_mses = [r["mse"] for r in to_results]
     plt.plot(to_ratios, to_mses, label="Compressing training dataset only")
 
