@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ ! -d "./logs" ]; then
     mkdir ./logs
 fi
@@ -13,8 +15,9 @@ mkdir ./logs/LongForecasting/$timestamp
 model_name=NLinear
 
 # Run compression for multiple powers of 2
-if test "$#" -ne 1; then
-    array=$(seq 0 6)
+if test "$#" -ne 1
+then
+    array=$(seq 0 20)
     debug=false
 else
     echo "Multiple parameters detected, debugging mode enabled."
