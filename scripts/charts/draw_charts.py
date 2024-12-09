@@ -128,5 +128,48 @@ def draw_RandomSampler_results():
 	plt.plot(ratios, mses)
 	fig.savefig("NLinear_accuracy_with_random_compression.pdf", bbox_inches='tight')
 
+def draw_RandomSampler_inverted_results():
+    results = [
+		{"preserved_points": 1, "mse":0.11079414933919907, "mae":0.2577025294303894},
+		{"preserved_points": 2, "mse":0.11079414933919907, "mae":0.2577025294303894},
+		{"preserved_points": 4, "mse":0.11079414933919907, "mae":0.2577025294303894},
+		{"preserved_points": 8, "mse":0.10717432200908661, "mae":0.2534983158111572},
+		{"preserved_points": 16, "mse":0.10404524952173233, "mae":0.24975897371768951},
+		{"preserved_points": 32, "mse":0.09754296392202377, "mae":0.2417737990617752},
+		{"preserved_points": 64, "mse":0.08986309915781021, "mae":0.23190705478191376},
+		{"preserved_points": 128, "mse":0.0841890349984169, "mae":0.2240869104862213},
+		{"preserved_points": 256, "mse":0.07971423119306564, "mae":0.21733172237873077},
+		{"preserved_points": 512, "mse":0.07754780352115631, "mae":0.21375297009944916},
+		{"preserved_points": 1024, "mse":0.0751136988401413, "mae":0.20998449623584747},
+		{"preserved_points": 2048, "mse":0.07395604252815247, "mae":0.20830030739307404},
+		{"preserved_points": 4096, "mse":0.07323602586984634, "mae":0.20742404460906982},
+		{"preserved_points": 8192, "mse":0.07280801981687546, "mae":0.20694184303283691},
+		{"preserved_points": 16384, "mse":0.07233629375696182, "mae":0.20639199018478394},
+		{"preserved_points": 32768, "mse":0.0731145516037941, "mae":0.20789319276809692},
+        {"preserved_points": 65536, "mse":0.07251517474651337, "mae":0.20666198432445526}
+	]
+
+    mses = [r["mse"] for r in results]
+      
+    train_len = 33505
+    val_len = 10801
+
+    ratios = []
+    for res in results:
+        ratio = (train_len + val_len) / (2 * res["preserved_points"]) # keeping `preserved_points` points for both `train` and `val` datasets
+        ratios.append(ratio)
+    
+    fig = plt.figure()
+    plt.title("Accuracy of NLinear model with RandomSampler compression")
+    plt.ylabel('MSE')
+    plt.xlabel('Compression ratio')
+
+    # zoom a bit
+    plt.axis([-500, 9000, 0.070, 0.113])
+
+    plt.plot(ratios, mses)
+    fig.savefig("NLinear_accuracy_with_random_compression.pdf", bbox_inches='tight')
+
 # draw_electricity_fli_results()
-draw_RandomSampler_results()
+# draw_RandomSampler_results()
+draw_RandomSampler_inverted_results()
