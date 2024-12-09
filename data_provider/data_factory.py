@@ -1,6 +1,6 @@
 from data_provider.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Compressed_ETT_minute, Dataset_Custom, Dataset_Pred
 from torch.utils.data import DataLoader
-from torch.utils.data.sampler import SubsetRandomSampler
+from torch.utils.data.sampler import RandomSampler, SubsetRandomSampler
 
 data_dict = {
     'ETTh1': Dataset_ETT_hour,
@@ -85,7 +85,8 @@ def data_provider(args, flag):
 
     print(flag, len(data_set))
     if flag != "test":
-        compression_sampler = SubsetRandomSampler(range(0, int(len(data_set)/args.preserve_ratio)))
+        # compression_sampler = SubsetRandomSampler(range(0, int(len(data_set)/args.preserve_ratio)))
+        compression_sampler = RandomSampler(data_set, True, int(len(data_set)/args.preserve_ratio))
         data_loader = DataLoader(
             data_set,
             batch_size=batch_size,

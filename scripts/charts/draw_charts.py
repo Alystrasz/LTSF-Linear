@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 def draw_electricity_fli_results():
     fig = plt.figure()
-    plt.title("Accuracy of NLinear model while keeping first points")
+    plt.title("Accuracy of NLinear model with SubsetRandomSampler compression")
     plt.ylabel('MSE')
     plt.xlabel('Compression ratio')
 
@@ -87,4 +87,46 @@ def draw_electricity_fli_results():
     plt.legend()
     fig.savefig("NLinear_accuracy_with_compressed_dataset.pdf", bbox_inches='tight')
 
-draw_electricity_fli_results()
+def draw_RandomSampler_results():
+	results = [
+		{"ratio": 1, "mse":0.07218873500823975, "mae":0.20622242987155914},
+        {"ratio": 2, "mse":0.07234717905521393, "mae":0.20638303458690643},
+        {"ratio": 4, "mse":0.07273950427770615, "mae":0.20685532689094543},
+        {"ratio": 8, "mse":0.07319291681051254, "mae":0.20738942921161652},
+        {"ratio": 16, "mse":0.07442723214626312, "mae":0.20896165072917938},
+        {"ratio": 32, "mse":0.07554087042808533, "mae":0.2105967402458191},
+        {"ratio": 64, "mse":0.07755719125270844, "mae":0.2137523889541626},
+        {"ratio": 128, "mse":0.07971423119306564, "mae":0.21733172237873077},
+        {"ratio": 256, "mse":0.08276624977588654, "mae":0.2220194786787033},
+        {"ratio": 512, "mse":0.09021437168121338, "mae":0.23237191140651703},
+        {"ratio": 1024, "mse":0.0978069007396698, "mae":0.24210354685783386},
+        {"ratio": 2048, "mse":0.1038285493850708, "mae":0.24949805438518524},
+        {"ratio": 4096, "mse":0.10705295950174332, "mae":0.25335395336151123},
+        {"ratio": 8192, "mse":0.11079414933919907, "mae":0.2577025294303894},
+        # crashes after this (num_samples=0)
+	]
+
+	fig = plt.figure()
+	plt.title("Accuracy of NLinear model with RandomSampler compression")
+	plt.ylabel('MSE')
+	plt.xlabel('Compression ratio')
+    
+	mses = [r["mse"] for r in results]
+      
+	train_len = 33505
+	val_len = 10801
+	total_len = train_len + val_len
+     
+	ratios = []
+	for res in results:
+		r = res["ratio"]
+		compressed_len = int(val_len/r) + int(train_len/r)
+		if compressed_len == 0:
+			compressed_len = 1
+		ratios.append(total_len / compressed_len)
+    
+	plt.plot(ratios, mses)
+	fig.savefig("NLinear_accuracy_with_random_compression.pdf", bbox_inches='tight')
+
+# draw_electricity_fli_results()
+draw_RandomSampler_results()
