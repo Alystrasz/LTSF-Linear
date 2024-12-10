@@ -38,6 +38,7 @@ parser.add_argument('--pred_len', type=int, default=96, help='prediction sequenc
 # compression
 parser.add_argument('--enable_compression', action='store_true', default=False, help='enables compression experiments')
 parser.add_argument('--preserve_ratio', type=int, default=0, help='dataset reduction ratio (keeps one point out of X points)')
+parser.add_argument('--tolerated_error', type=float, default=0, help='sets the error margin for modelling data')
 
 
 # DLinear

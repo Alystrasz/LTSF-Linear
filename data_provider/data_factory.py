@@ -2,6 +2,8 @@ from data_provider.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Data
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import RandomSampler, SubsetRandomSampler
 
+from data_provider.fli.fli_data_loader import FLI_Dataset_ETT_minute
+
 data_dict = {
     'ETTh1': Dataset_ETT_hour,
     'ETTh2': Dataset_ETT_hour,
@@ -70,30 +72,55 @@ def data_provider(args, flag):
     #     drop_last=drop_last)
     # return data_set, data_loader
 
+    # FLI compression experiments
+    use_fli = False
 
-    data_set = Data(
-        root_path=args.root_path,
-        data_path=args.data_path,
-        flag=flag,
-        size=[args.seq_len, args.label_len, args.pred_len],
-        features=args.features,
-        target=args.target,
-        timeenc=timeenc,
-        freq=freq,
-        train_only=train_only
-    )
+    if args.enable_compression and args.tolerated_error != 0:
+        use_fli = True
+        data_set = FLI_Dataset_ETT_minute(
+            root_path=args.root_path,
+            data_path=args.data_path,
+            flag=flag,
+            size=[args.seq_len, args.label_len, args.pred_len],
+            features=args.features,
+            target=args.target,
+            timeenc=timeenc,
+            freq=freq,
+            train_only=train_only,
+            tolerated_error=args.tolerated_error
+        )
+    else:
+        data_set = Data(
+            root_path=args.root_path,
+            data_path=args.data_path,
+            flag=flag,
+            size=[args.seq_len, args.label_len, args.pred_len],
+            features=args.features,
+            target=args.target,
+            timeenc=timeenc,
+            freq=freq,
+            train_only=train_only
+        )
 
     print(flag, len(data_set))
+
     if flag != "test":
-        # compression_sampler = SubsetRandomSampler(range(0, int(len(data_set)/args.preserve_ratio)))
-        # compression_sampler = RandomSampler(data_set, True, int(len(data_set)/args.preserve_ratio))
-        compression_sampler = RandomSampler(data_set, True, args.preserve_ratio)
-        data_loader = DataLoader(
-            data_set,
-            batch_size=batch_size,
-            sampler=compression_sampler,
-            num_workers=args.num_workers,
-            drop_last=drop_last)
+        if use_fli:
+            data_loader = DataLoader(
+                data_set,
+                batch_size=batch_size,
+                num_workers=args.num_workers,
+                drop_last=drop_last)
+        else:
+            # compression_sampler = SubsetRandomSampler(range(0, int(len(data_set)/args.preserve_ratio)))
+            # compression_sampler = RandomSampler(data_set, True, int(len(data_set)/args.preserve_ratio))
+            compression_sampler = RandomSampler(data_set, True, args.preserve_ratio)
+            data_loader = DataLoader(
+                data_set,
+                batch_size=batch_size,
+                sampler=compression_sampler,
+                num_workers=args.num_workers,
+                drop_last=drop_last)
     else:
         data_loader = DataLoader(
             data_set,
