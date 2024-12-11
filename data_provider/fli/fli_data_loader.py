@@ -3,6 +3,7 @@ import pandas as pd
 
 from sklearn.preprocessing import StandardScaler
 from data_provider.data_loader import Dataset_ETT_minute
+from data_provider.fli.compression_data_frame import CompressionDataFrame
 from utils.timefeatures import time_features
 
 
@@ -22,9 +23,9 @@ class FLI_Dataset_ETT_minute(Dataset_ETT_minute):
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
         
-        # todo: transform data frame using FLI here
-        print(f"todo: model data using FLI with tolerated_error={self.tolerated_error}")
-        print(df_raw.head())
+        # Transform data frame using FLI
+        df_raw = CompressionDataFrame(df_raw)
+        df_raw.compress(self.tolerated_error)
 
         border1s = [0, 12 * 30 * 24 * 4 - self.seq_len, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4 - self.seq_len]
         border2s = [12 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 8 * 30 * 24 * 4]

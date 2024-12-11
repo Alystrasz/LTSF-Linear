@@ -3,3 +3,4 @@ matplotlib
 pandas
 scikit-learn
 torch==1.9.0
+ciso8601==2.3.2
