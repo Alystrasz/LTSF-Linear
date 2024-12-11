@@ -114,6 +114,7 @@ def data_provider(args, flag):
         else:
             # compression_sampler = SubsetRandomSampler(range(0, int(len(data_set)/args.preserve_ratio)))
             # compression_sampler = RandomSampler(data_set, True, int(len(data_set)/args.preserve_ratio))
+            print("Using RandomSampler compression.")
             compression_sampler = RandomSampler(data_set, True, args.preserve_ratio)
             data_loader = DataLoader(
                 data_set,

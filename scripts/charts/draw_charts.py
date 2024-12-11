@@ -221,7 +221,7 @@ def compare_compressions():
 
     # random sampling compression
     rs_mses = [r["mse"] for r in randomSampler_results]
-    rs_ratios = [raw_df_floats_count/r["preserved_points"]*7 for r in randomSampler_results]
+    rs_ratios = [raw_df_floats_count/(r["preserved_points"]*7) for r in randomSampler_results]
     plt.plot(rs_ratios, rs_mses, label="Random sampling")
 
     # fli compression
@@ -230,7 +230,7 @@ def compare_compressions():
     plt.plot(fli_ratios, fli_mses, label="FLI constant compression")
 
     # zoom a bit
-    #plt.axis([-500, 9000, 0.070, 0.113])
+    plt.axis([-500, 9000, 0.070, 0.113])
 
     plt.legend()
     fig.savefig("NLinear_compression.pdf", bbox_inches='tight')
