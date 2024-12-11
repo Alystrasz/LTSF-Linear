@@ -170,6 +170,45 @@ def draw_RandomSampler_inverted_results():
     plt.plot(ratios, mses)
     fig.savefig("NLinear_accuracy_with_random_compression.pdf", bbox_inches='tight')
 
+def draw_FLI_compression_results():
+    results = [
+        {"error": 0.001, "model_floats_count":1345665, "mse":0.07313929498195648, "mae":0.2069794237613678},
+        {"error": 0.002, "model_floats_count":1345665, "mse":0.07313929498195648, "mae":0.2069794237613678},
+        {"error": 0.004, "model_floats_count":1345665, "mse":0.07313929498195648, "mae":0.2069794237613678},
+        {"error": 0.008, "model_floats_count":1345662, "mse":0.07313929498195648, "mae":0.2069794237613678},
+        {"error": 0.016, "model_floats_count":1298886, "mse":0.07313929498195648, "mae":0.2069794237613678},
+        {"error": 0.032, "model_floats_count":1226643, "mse":0.07313929498195648, "mae":0.2069794237613678},
+        {"error": 0.064, "model_floats_count":1073715, "mse":0.07313983887434006, "mae":0.2069801539182663},
+        {"error": 0.128, "model_floats_count":864078, "mse":0.07314002513885498, "mae":0.20698142051696777},
+        {"error": 0.256, "model_floats_count":629493, "mse":0.07314251363277435, "mae":0.20698542892932892},
+        {"error": 0.512, "model_floats_count":402843, "mse":0.0731629952788353, "mae":0.20701350271701813},
+        {"error": 1.024, "model_floats_count":204768, "mse":0.07324954122304916, "mae":0.2071533501148224},
+        {"error": 2.048, "model_floats_count":80637, "mse":0.07356352359056473, "mae":0.20765310525894165},
+        {"error": 4.096, "model_floats_count":29700, "mse":0.07961008697748184, "mae":0.2181011140346527},
+        {"error": 8.192, "model_floats_count":10908, "mse":0.11287792772054672, "mae":0.2645367383956909},
+        {"error": 16.384, "model_floats_count":3618, "mse":1.0187914371490479, "mae":0.721802294254303},
+        {"error": 32.768, "model_floats_count":273, "mse":0.3006591200828552, "mae":0.4017712473869324},
+    ]
+
+    rows_count = 69680
+    cols_count = 7 + 1 # 7 data columns + date index
+    raw_df_floats_count = rows_count * cols_count
+
+    ratios = [raw_df_floats_count/r["model_floats_count"] for r in results]
+    mses = [r["mse"] for r in results]
+
+    fig = plt.figure()
+    plt.title("Accuracy of NLinear model with FLI compression")
+    plt.ylabel('MSE')
+    plt.xlabel('Compression ratio')
+
+    # zoom a bit
+    plt.axis([-500, 9000, 0.070, 0.113])
+
+    plt.plot(ratios, mses, label="FLI constant compression")
+    fig.savefig("NLinear_accuracy_with_FLI_compression.pdf", bbox_inches='tight')
+
 # draw_electricity_fli_results()
 # draw_RandomSampler_results()
-draw_RandomSampler_inverted_results()
+# draw_RandomSampler_inverted_results()
+draw_FLI_compression_results()

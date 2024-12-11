@@ -75,7 +75,7 @@ def data_provider(args, flag):
     # FLI compression experiments
     use_fli = False
 
-    if args.enable_compression and args.tolerated_error != 0:
+    if args.enable_compression and args.tolerated_error != 0 and flag != "test":
         use_fli = True
         data_set = FLI_Dataset_ETT_minute(
             root_path=args.root_path,
