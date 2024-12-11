@@ -128,34 +128,34 @@ def draw_RandomSampler_results():
 	plt.plot(ratios, mses)
 	fig.savefig("NLinear_accuracy_with_random_compression.pdf", bbox_inches='tight')
 
-def draw_RandomSampler_inverted_results():
-    results = [
-		{"preserved_points": 1, "mse":0.11079414933919907, "mae":0.2577025294303894},
-		{"preserved_points": 2, "mse":0.11079414933919907, "mae":0.2577025294303894},
-		{"preserved_points": 4, "mse":0.11079414933919907, "mae":0.2577025294303894},
-		{"preserved_points": 8, "mse":0.10717432200908661, "mae":0.2534983158111572},
-		{"preserved_points": 16, "mse":0.10404524952173233, "mae":0.24975897371768951},
-		{"preserved_points": 32, "mse":0.09754296392202377, "mae":0.2417737990617752},
-		{"preserved_points": 64, "mse":0.08986309915781021, "mae":0.23190705478191376},
-		{"preserved_points": 128, "mse":0.0841890349984169, "mae":0.2240869104862213},
-		{"preserved_points": 256, "mse":0.07971423119306564, "mae":0.21733172237873077},
-		{"preserved_points": 512, "mse":0.07754780352115631, "mae":0.21375297009944916},
-		{"preserved_points": 1024, "mse":0.0751136988401413, "mae":0.20998449623584747},
-		{"preserved_points": 2048, "mse":0.07395604252815247, "mae":0.20830030739307404},
-		{"preserved_points": 4096, "mse":0.07323602586984634, "mae":0.20742404460906982},
-		{"preserved_points": 8192, "mse":0.07280801981687546, "mae":0.20694184303283691},
-		{"preserved_points": 16384, "mse":0.07233629375696182, "mae":0.20639199018478394},
-		{"preserved_points": 32768, "mse":0.0731145516037941, "mae":0.20789319276809692},
-        {"preserved_points": 65536, "mse":0.07251517474651337, "mae":0.20666198432445526}
-	]
+randomSampler_results = [
+    {"preserved_points": 1, "mse":0.11079414933919907, "mae":0.2577025294303894},
+    {"preserved_points": 2, "mse":0.11079414933919907, "mae":0.2577025294303894},
+    {"preserved_points": 4, "mse":0.11079414933919907, "mae":0.2577025294303894},
+    {"preserved_points": 8, "mse":0.10717432200908661, "mae":0.2534983158111572},
+    {"preserved_points": 16, "mse":0.10404524952173233, "mae":0.24975897371768951},
+    {"preserved_points": 32, "mse":0.09754296392202377, "mae":0.2417737990617752},
+    {"preserved_points": 64, "mse":0.08986309915781021, "mae":0.23190705478191376},
+    {"preserved_points": 128, "mse":0.0841890349984169, "mae":0.2240869104862213},
+    {"preserved_points": 256, "mse":0.07971423119306564, "mae":0.21733172237873077},
+    {"preserved_points": 512, "mse":0.07754780352115631, "mae":0.21375297009944916},
+    {"preserved_points": 1024, "mse":0.0751136988401413, "mae":0.20998449623584747},
+    {"preserved_points": 2048, "mse":0.07395604252815247, "mae":0.20830030739307404},
+    {"preserved_points": 4096, "mse":0.07323602586984634, "mae":0.20742404460906982},
+    {"preserved_points": 8192, "mse":0.07280801981687546, "mae":0.20694184303283691},
+    {"preserved_points": 16384, "mse":0.07233629375696182, "mae":0.20639199018478394},
+    {"preserved_points": 32768, "mse":0.0731145516037941, "mae":0.20789319276809692},
+    {"preserved_points": 65536, "mse":0.07251517474651337, "mae":0.20666198432445526}
+]
 
-    mses = [r["mse"] for r in results]
+def draw_RandomSampler_inverted_results():
+    mses = [r["mse"] for r in randomSampler_results]
       
     train_len = 33505
     val_len = 10801
 
     ratios = []
-    for res in results:
+    for res in randomSampler_results:
         ratio = (train_len + val_len) / (2 * res["preserved_points"]) # keeping `preserved_points` points for both `train` and `val` datasets
         ratios.append(ratio)
     
@@ -170,32 +170,32 @@ def draw_RandomSampler_inverted_results():
     plt.plot(ratios, mses)
     fig.savefig("NLinear_accuracy_with_random_compression.pdf", bbox_inches='tight')
 
-def draw_FLI_compression_results():
-    results = [
-        {"error": 0.001, "model_floats_count":1345665, "mse":0.07313929498195648, "mae":0.2069794237613678},
-        {"error": 0.002, "model_floats_count":1345665, "mse":0.07313929498195648, "mae":0.2069794237613678},
-        {"error": 0.004, "model_floats_count":1345665, "mse":0.07313929498195648, "mae":0.2069794237613678},
-        {"error": 0.008, "model_floats_count":1345662, "mse":0.07313929498195648, "mae":0.2069794237613678},
-        {"error": 0.016, "model_floats_count":1298886, "mse":0.07313929498195648, "mae":0.2069794237613678},
-        {"error": 0.032, "model_floats_count":1226643, "mse":0.07313929498195648, "mae":0.2069794237613678},
-        {"error": 0.064, "model_floats_count":1073715, "mse":0.07313983887434006, "mae":0.2069801539182663},
-        {"error": 0.128, "model_floats_count":864078, "mse":0.07314002513885498, "mae":0.20698142051696777},
-        {"error": 0.256, "model_floats_count":629493, "mse":0.07314251363277435, "mae":0.20698542892932892},
-        {"error": 0.512, "model_floats_count":402843, "mse":0.0731629952788353, "mae":0.20701350271701813},
-        {"error": 1.024, "model_floats_count":204768, "mse":0.07324954122304916, "mae":0.2071533501148224},
-        {"error": 2.048, "model_floats_count":80637, "mse":0.07356352359056473, "mae":0.20765310525894165},
-        {"error": 4.096, "model_floats_count":29700, "mse":0.07961008697748184, "mae":0.2181011140346527},
-        {"error": 8.192, "model_floats_count":10908, "mse":0.11287792772054672, "mae":0.2645367383956909},
-        {"error": 16.384, "model_floats_count":3618, "mse":1.0187914371490479, "mae":0.721802294254303},
-        {"error": 32.768, "model_floats_count":273, "mse":0.3006591200828552, "mae":0.4017712473869324},
-    ]
+fli_results = [
+    {"error": 0.001, "model_floats_count":1345665, "mse":0.07313929498195648, "mae":0.2069794237613678},
+    {"error": 0.002, "model_floats_count":1345665, "mse":0.07313929498195648, "mae":0.2069794237613678},
+    {"error": 0.004, "model_floats_count":1345665, "mse":0.07313929498195648, "mae":0.2069794237613678},
+    {"error": 0.008, "model_floats_count":1345662, "mse":0.07313929498195648, "mae":0.2069794237613678},
+    {"error": 0.016, "model_floats_count":1298886, "mse":0.07313929498195648, "mae":0.2069794237613678},
+    {"error": 0.032, "model_floats_count":1226643, "mse":0.07313929498195648, "mae":0.2069794237613678},
+    {"error": 0.064, "model_floats_count":1073715, "mse":0.07313983887434006, "mae":0.2069801539182663},
+    {"error": 0.128, "model_floats_count":864078, "mse":0.07314002513885498, "mae":0.20698142051696777},
+    {"error": 0.256, "model_floats_count":629493, "mse":0.07314251363277435, "mae":0.20698542892932892},
+    {"error": 0.512, "model_floats_count":402843, "mse":0.0731629952788353, "mae":0.20701350271701813},
+    {"error": 1.024, "model_floats_count":204768, "mse":0.07324954122304916, "mae":0.2071533501148224},
+    {"error": 2.048, "model_floats_count":80637, "mse":0.07356352359056473, "mae":0.20765310525894165},
+    {"error": 4.096, "model_floats_count":29700, "mse":0.07961008697748184, "mae":0.2181011140346527},
+    {"error": 8.192, "model_floats_count":10908, "mse":0.11287792772054672, "mae":0.2645367383956909},
+    #{"error": 16.384, "model_floats_count":3618, "mse":1.0187914371490479, "mae":0.721802294254303},
+    {"error": 32.768, "model_floats_count":273, "mse":0.3006591200828552, "mae":0.4017712473869324},
+]
 
+def draw_FLI_compression_results():
     rows_count = 69680
     cols_count = 7 + 1 # 7 data columns + date index
     raw_df_floats_count = rows_count * cols_count
 
-    ratios = [raw_df_floats_count/r["model_floats_count"] for r in results]
-    mses = [r["mse"] for r in results]
+    ratios = [raw_df_floats_count/r["model_floats_count"] for r in fli_results]
+    mses = [r["mse"] for r in fli_results]
 
     fig = plt.figure()
     plt.title("Accuracy of NLinear model with FLI compression")
@@ -203,12 +203,41 @@ def draw_FLI_compression_results():
     plt.xlabel('Compression ratio')
 
     # zoom a bit
-    plt.axis([-500, 9000, 0.070, 0.113])
+    #plt.axis([-500, 9000, 0.070, 0.113])
 
     plt.plot(ratios, mses, label="FLI constant compression")
     fig.savefig("NLinear_accuracy_with_FLI_compression.pdf", bbox_inches='tight')
 
+def compare_compressions():
+    fig = plt.figure()
+    plt.title("Accuracy of NLinear model regarding train+val compression")
+    plt.ylabel('MSE')
+    plt.xlabel('Compression ratio')
+
+    # original dataframe statistics
+    rows_count = 69680
+    cols_count = 7 + 1 # 7 data columns + date index
+    raw_df_floats_count = rows_count * cols_count
+
+    # random sampling compression
+    rs_mses = [r["mse"] for r in randomSampler_results]
+    rs_ratios = [raw_df_floats_count/r["preserved_points"]*7 for r in randomSampler_results]
+    plt.plot(rs_ratios, rs_mses, label="Random sampling")
+
+    # fli compression
+    fli_mses = [r["mse"] for r in fli_results]
+    fli_ratios = [raw_df_floats_count/r["model_floats_count"] for r in fli_results]
+    plt.plot(fli_ratios, fli_mses, label="FLI constant compression")
+
+    # zoom a bit
+    #plt.axis([-500, 9000, 0.070, 0.113])
+
+    plt.legend()
+    fig.savefig("NLinear_compression.pdf", bbox_inches='tight')
+
+
 # draw_electricity_fli_results()
 # draw_RandomSampler_results()
 # draw_RandomSampler_inverted_results()
-draw_FLI_compression_results()
+# draw_FLI_compression_results()
+compare_compressions()
