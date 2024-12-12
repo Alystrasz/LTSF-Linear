@@ -1,3 +1,4 @@
+import math
 import pandas as pd
 import ciso8601
 from datetime import datetime
@@ -96,6 +97,65 @@ class CompressionDataFrame(pd.DataFrame):
         # reattribute values
         assert self.len() == len(data)
         self['data'] = [self.fli.read(d[0]) for d in data]
+    
+    # ============================================================================================================
+    # ============================================================================================================
+    # STAIR COMPRESSION
+    # ============================================================================================================
+    # ============================================================================================================
+    def stair_compress(self, stop, step_count, max_error):
+        print("BEGIN step compress")
+        print(self.head())
+
+        # model data
+        timestamps = [datetime.timestamp(ciso8601.parse_datetime(str(t))) for t in self['date']]
+        for value in self.columns.values:
+            if value == "date":
+                continue
+
+            series = list(zip(timestamps, self[value]))
+            model: FastLinearInterpolation = self.stairs_power_compress(series, stop, step_count, max_error)
+            ## stats
+            self.models[value] = model
+            print(f"=> Column {value} stored in FLI model.")
+            self.rawValuesCount += len(self)
+            self.modelsCount += len(model.listOldModels)
+
+        # reattribute values
+        for value in self.columns.values:
+            if value == "date":
+                continue
+        self[value] = [self.models[value].read(t) for t in timestamps]
+
+        print(self.head())
+        print(self.print_compression_rate())
+        print("END step compress")
+    
+    def stairs_power_compress(self, ts, stop: float, step_count: float, max_err: float) -> FastLinearInterpolation:
+        model = FastLinearInterpolation()
+        
+        # First point is uncompressed
+        model.add(ts[0][0], ts[0][1])
+
+        for i in range(1, len(ts)):
+            tolerated_error = self.get_staired_tolerated_error(i, stop, step_count, max_err)
+            model.setError(tolerated_error)
+            model.add(ts[i][0], ts[i][1])
+
+        return model
+
+    def get_staired_tolerated_error(self, t: int, stop: int, step_count: int, max_err: float) -> float:
+        if t == 0:
+            return max_err
+        if t >= stop:
+            return 0
+
+        step_x_length = stop / step_count
+        step_y_size = max_err / step_count
+
+        return max_err - ((math.floor(t / step_x_length)) * step_y_size)
+    # ============================================================================================================
+    # ============================================================================================================
 
 
 class DriftBuilder():

@@ -25,7 +25,13 @@ class FLI_Dataset_ETT_minute(Dataset_ETT_minute):
         
         # Transform data frame using FLI
         df_raw = CompressionDataFrame(df_raw)
-        df_raw.compress(self.tolerated_error)
+        #df_raw.compress(self.tolerated_error)
+
+        ## Stair compression
+        stop = int(len(df_raw)/10 * 8)
+        step_count = 20
+        df_raw.stair_compress(stop, step_count, self.tolerated_error)
+        df_raw.print_compression_rate()
 
         border1s = [0, 12 * 30 * 24 * 4 - self.seq_len, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4 - self.seq_len]
         border2s = [12 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 8 * 30 * 24 * 4]
