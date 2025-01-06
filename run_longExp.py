@@ -36,6 +36,9 @@ parser.add_argument('--label_len', type=int, default=48, help='start token lengt
 parser.add_argument('--pred_len', type=int, default=96, help='prediction sequence length')
 
 
+# compression
+parser.add_argument('--keep_one_datum_out_of', type=int, default=0, help='dataset reduction ratio (keeps one point out of X points)')
+
 # DLinear
 parser.add_argument('--individual', action='store_true', default=False, help='DLinear: a linear layer for each variate(channel) individually')
 # Formers 
