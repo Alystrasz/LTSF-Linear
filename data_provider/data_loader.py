@@ -188,6 +188,80 @@ class Dataset_ETT_minute(Dataset):
     def inverse_transform(self, data):
         return self.scaler.inverse_transform(data)
 
+class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
+    """
+    Extension of the `Dataset_ETT_minute` class, that compresses dataset based
+    on arguments given in the `args` additional input parameter.
+    """
+
+    def __init__(self, root_path, flag='train', size=None,
+                 features='S', data_path='ETTm1.csv',
+                 target='OT', scale=True, timeenc=0, freq='t', train_only=False,
+                 args={}):
+
+        print(f"Loading dataset for {flag} purpose.")
+
+        self.keep_one_datum_out_of = 0
+        if "keep_one_datum_out_of" in args and args.keep_one_datum_out_of > 1:
+            self.keep_one_datum_out_of = args.keep_one_datum_out_of
+
+        super().__init__(root_path, flag, size, features, data_path, target, scale, timeenc, freq, train_only)
+
+    @staticmethod
+    def is_compression_required(args) -> bool:
+        if args.keep_one_datum_out_of > 1:
+            return True
+        return False
+
+    def compress_data(self, dataframe) -> pd.DataFrame:
+        if self.keep_one_datum_out_of > 1:
+            print(f"Compressing dataset (keeping one datum out of {self.keep_one_datum_out_of}).")
+        return dataframe
+
+    def __read_data__(self):
+        self.scaler = StandardScaler()
+        df_raw = pd.read_csv(os.path.join(self.root_path,
+                                          self.data_path))
+
+        border1s = [0, 12 * 30 * 24 * 4 - self.seq_len, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4 - self.seq_len]
+        border2s = [12 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 8 * 30 * 24 * 4]
+        border1 = border1s[self.set_type]
+        border2 = border2s[self.set_type]
+
+        # Compression step
+        df_raw = self.compress_data(df_raw)
+
+        if self.features == 'M' or self.features == 'MS':
+            cols_data = df_raw.columns[1:]
+            df_data = df_raw[cols_data]
+        elif self.features == 'S':
+            df_data = df_raw[[self.target]]
+
+        if self.scale:
+            train_data = df_data[border1s[0]:border2s[0]]
+            self.scaler.fit(train_data.values)
+            data = self.scaler.transform(df_data.values)
+        else:
+            data = df_data.values
+
+        df_stamp = df_raw[['date']][border1:border2]
+        df_stamp['date'] = pd.to_datetime(df_stamp.date)
+
+        if self.timeenc == 0:
+            df_stamp['month'] = df_stamp.date.apply(lambda row: row.month, 1)
+            df_stamp['day'] = df_stamp.date.apply(lambda row: row.day, 1)
+            df_stamp['weekday'] = df_stamp.date.apply(lambda row: row.weekday(), 1)
+            df_stamp['hour'] = df_stamp.date.apply(lambda row: row.hour, 1)
+            df_stamp['minute'] = df_stamp.date.apply(lambda row: row.minute, 1)
+            df_stamp['minute'] = df_stamp.minute.map(lambda x: x // 15)
+            data_stamp = df_stamp.drop(['date'], 1).values
+        elif self.timeenc == 1:
+            data_stamp = time_features(pd.to_datetime(df_stamp['date'].values), freq=self.freq)
+            data_stamp = data_stamp.transpose(1, 0)
+
+        self.data_x = data[border1:border2]
+        self.data_y = data[border1:border2]
+        self.data_stamp = data_stamp
 
 class Dataset_Custom(Dataset):
     def __init__(self, root_path, flag='train', size=None,
