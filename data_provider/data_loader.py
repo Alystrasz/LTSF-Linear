@@ -213,10 +213,17 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
             return True
         return False
 
-    def compress_data(self, dataframe) -> pd.DataFrame:
+    def compress_data(self, df: pd.DataFrame) -> pd.DataFrame:
+        # Preserve one datum out of x
         if self.keep_one_datum_out_of > 1:
+            frame = df.copy(deep=True)
             print(f"Compressing dataset (keeping one datum out of {self.keep_one_datum_out_of}).")
-        return dataframe
+            print(f"Original length: {len(frame)}")
+            frame = frame[frame.index % self.keep_one_datum_out_of == 0]
+            print(f"Compressed length: {len(frame)}")
+            return frame
+
+        raise Exception("Could not find how to compress dataset.")
 
     def __read_data__(self):
         self.scaler = StandardScaler()
