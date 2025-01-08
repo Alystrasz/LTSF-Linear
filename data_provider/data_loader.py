@@ -199,11 +199,14 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
                  target='OT', scale=True, timeenc=0, freq='t', train_only=False,
                  args={}):
 
-        print(f"Loading dataset for {flag} purpose.")
+        print(f"\nLoading dataset for {flag} purpose.")
 
         self.keep_one_datum_out_of = 0
         if "keep_one_datum_out_of" in args and args.keep_one_datum_out_of > 1:
             self.keep_one_datum_out_of = args.keep_one_datum_out_of
+        self.divide_dataset_size = 0
+        if "divide_dataset_size" in args and args.divide_dataset_size > 1:
+            self.divide_dataset_size = args.divide_dataset_size
 
         super().__init__(root_path, flag, size, features, data_path, target, scale, timeenc, freq, train_only)
 
@@ -211,11 +214,14 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
     def is_compression_required(args) -> bool:
         if args.keep_one_datum_out_of > 1:
             return True
+        if args.divide_dataset_size > 1:
+            return True
         return False
 
     def compress_data(self, df: pd.DataFrame) -> pd.DataFrame:
         # Preserve one datum out of x
         if self.keep_one_datum_out_of > 1:
+            raise Exception("todo: FIX (work around borders maybe?)")
             frame = df.copy(deep=True)
             print(f"Compressing dataset (keeping one datum out of {self.keep_one_datum_out_of}).")
             print(f"Original length: {len(frame)}")
@@ -236,7 +242,10 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
         border2 = border2s[self.set_type]
 
         # Compression step
-        df_raw = self.compress_data(df_raw)
+        #df_raw = self.compress_data(df_raw)
+        if self.divide_dataset_size > 1:
+            border1 = int(border1 / self.divide_dataset_size)
+            border2 = int(border2 / self.divide_dataset_size)
 
         if self.features == 'M' or self.features == 'MS':
             cols_data = df_raw.columns[1:]

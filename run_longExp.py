@@ -38,6 +38,7 @@ parser.add_argument('--pred_len', type=int, default=96, help='prediction sequenc
 
 # compression
 parser.add_argument('--keep_one_datum_out_of', type=int, default=0, help='dataset reduction ratio (keeps one point out of X points)')
+parser.add_argument('--divide_dataset_size', type=int, default=0, help='dataset reduction ratio (uses first X points for each dataset)')
 
 # DLinear
 parser.add_argument('--individual', action='store_true', default=False, help='DLinear: a linear layer for each variate(channel) individually')
