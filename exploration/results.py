@@ -45,6 +45,13 @@ def parse_log_file(path):
         numbers = re.findall("[0-9]+", matches[-1])
         result["epochs_count"] = int(numbers[0])
 
+    # Compression parameters
+    ## divide_dataset_size
+    matches = re.findall("divide_dataset_size=[0-9]+", text)
+    if len(matches) != 0:
+        value = re.findall("[0-9]+", matches[0])
+        result["divide_dataset_size"] = int(value[0])
+
     return result
 
 def parse_directory(dir_path):
