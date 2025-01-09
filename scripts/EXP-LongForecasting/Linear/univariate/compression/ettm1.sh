@@ -38,8 +38,10 @@ python -u run_longExp.py \
   --pred_len 96 \
   --enc_in 1 \
   --des 'Exp' \
-  --keep_one_datum_out_of $p \
+  --divide_dataset_size $p \
   --itr 1 --batch_size 8 --learning_rate 0.0001 --feature S >>$filename
+
+#--keep_one_datum_out_of $p \
 
 echo "" >>$filename
 echo "Finished at" $(date) >>$filename
