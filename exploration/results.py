@@ -1,3 +1,4 @@
+import pandas as pd
 import os
 import re
 import sys
@@ -59,7 +60,10 @@ def parse_directory(dir_path):
     for file in os.listdir(dir_path):
         file_path = os.path.join(dir_path, file)
         results.append( parse_log_file(file_path) )
-    print(results)
+    df = pd.DataFrame(results)
+    df = df.sort_values('divide_dataset_size')
+    df = df.drop('divide_dataset_size', axis=1)
+    print(df.to_string(index=False))
 
 # Main
 if len(sys.argv) != 2:
