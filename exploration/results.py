@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 
@@ -46,9 +47,22 @@ def parse_log_file(path):
 
     return result
 
+def parse_directory(dir_path):
+    results = []
+    for file in os.listdir(dir_path):
+        file_path = os.path.join(dir_path, file)
+        results.append( parse_log_file(file_path) )
+    print(results)
 
+# Main
 if len(sys.argv) != 2:
     raise Exception("Wrong format:\n\tpython exploration/results.py path/to/log")
-path_to_log = sys.argv[1]
-result = parse_log_file(path_to_log)
-print(result)
+path = sys.argv[1]
+
+if os.path.isfile(path):
+    result = parse_log_file(path)
+    print(result)
+elif os.path.isdir(path):
+    parse_directory(path)
+else:
+    raise Exception("Input path is not a file neither a directory (?).")
