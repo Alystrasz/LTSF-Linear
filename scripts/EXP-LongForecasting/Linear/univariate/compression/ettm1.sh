@@ -16,10 +16,13 @@ timestamp=$(date +%s)
 mkdir ./logs/LongForecasting/$timestamp
 
 model_name=NLinear
-array=$(seq 1 20)
+array=$(seq 0 10)
 
 for p in $array
 do
+
+# Compute power of 2
+p=$((2 ** $p))
 
 filename=(logs/LongForecasting/$timestamp/$model_name'_'fS_ETTm1_336_96_keep_$p.log)
 
