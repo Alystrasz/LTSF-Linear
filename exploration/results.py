@@ -39,6 +39,14 @@ def parse_log_file(path):
         numbers = re.findall("[0-9]+", matches[0])
         result["test_len"] = int(numbers[0])
 
+    # Cost time
+    matches = re.findall("cost time: [0-9]+.[0-9]*", text)
+    if len(matches) != 0:
+        total_time = 0
+        for match in matches:
+            total_time += float(re.findall("[0-9]+.[0-9]*", match)[0])
+        result["cost_time"] = total_time
+
     # Epochs count
     matches = re.findall("Epoch: [0-9]+", text)
     ## Extract epochs count using last match from file
