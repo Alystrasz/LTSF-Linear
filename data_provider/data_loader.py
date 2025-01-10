@@ -196,7 +196,7 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
 
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='ETTm1.csv',
-                 target='OT', scale=True, timeenc=0, freq='t', train_only=False,
+                 target='OT', scale=False, timeenc=0, freq='t', train_only=False,
                  args={}):
 
         print(f"\nLoading dataset for {flag} purpose.")
@@ -247,6 +247,16 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
             border1 = int(border1 / self.divide_dataset_size)
             border2 = int(border2 / self.divide_dataset_size)
 
+            min = self.seq_len + self.pred_len + 1
+            diff = border2 - border1
+            print(f"min={min}")
+            print(f"border1={border1}")
+            print(f"border2={border2}")
+            print(f"diff={diff}")
+            if diff < min:
+                print("gonna crash, fix")
+                border2 = border1 + min
+
         if self.features == 'M' or self.features == 'MS':
             cols_data = df_raw.columns[1:]
             df_data = df_raw[cols_data]
@@ -257,8 +267,11 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
             train_data = df_data[border1s[0]:border2s[0]]
             self.scaler.fit(train_data.values)
             data = self.scaler.transform(df_data.values)
+            print("~> Scaling enabled.")
         else:
             data = df_data.values
+            print("~> Scaling disabled.")
+        print(data)
 
         df_stamp = df_raw[['date']][border1:border2]
         df_stamp['date'] = pd.to_datetime(df_stamp.date)
