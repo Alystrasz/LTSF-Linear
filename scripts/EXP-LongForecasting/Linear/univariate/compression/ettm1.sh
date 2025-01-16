@@ -15,7 +15,7 @@ model_name=NLinear
 timestamp=$(date +%s)
 mkdir ./logs/LongForecasting/$timestamp
 
-model_name=NLinear
+model_name=DLinear
 array=$(seq 0 10)
 
 for p in $array
@@ -39,12 +39,14 @@ python -u run_longExp.py \
   --data ETTm1 \
   --seq_len 336 \
   --pred_len 96 \
-  --enc_in 1 \
+  --enc_in 7 \
   --des 'Exp' \
   --divide_dataset_size $p \
-  --itr 1 --batch_size 8 --learning_rate 0.0001 --feature S >>$filename
+  --itr 1 --batch_size 8 --learning_rate 0.0001 --features M >>$filename
 
 #--keep_one_datum_out_of $p \
+
+#  --enc_in 7 \ for MTS, 1 for UTS (feature='S')
 
 echo "" >>$filename
 echo "Finished at" $(date) >>$filename
