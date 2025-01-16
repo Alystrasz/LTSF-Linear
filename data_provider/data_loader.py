@@ -183,6 +183,7 @@ class Dataset_ETT_minute(Dataset):
         return seq_x, seq_y, seq_x_mark, seq_y_mark
 
     def __len__(self):
+        print(f"len: {len(self.data_x) - self.seq_len - self.pred_len + 1}")
         return len(self.data_x) - self.seq_len - self.pred_len + 1
 
     def inverse_transform(self, data):
@@ -196,7 +197,7 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
 
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='ETTm1.csv',
-                 target='OT', scale=False, timeenc=0, freq='t', train_only=False,
+                 target='OT', scale=True, timeenc=0, freq='t', train_only=False,
                  args={}):
 
         print(f"\nLoading dataset for {flag} purpose.")
@@ -209,6 +210,12 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
             self.divide_dataset_size = args.divide_dataset_size
 
         super().__init__(root_path, flag, size, features, data_path, target, scale, timeenc, freq, train_only)
+
+        print("\nSizes:")
+        print(f"seq_len: {self.seq_len}")
+        print(f"label_len: {self.label_len}")
+        print(f"pred_len: {self.pred_len}")
+        print()
 
     @staticmethod
     def is_compression_required(args) -> bool:
@@ -257,21 +264,31 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
                 print("gonna crash, fix")
                 border2 = border1 + min
 
+        print(f"Data interval: [{border1},{border2}]")
+
         if self.features == 'M' or self.features == 'MS':
             cols_data = df_raw.columns[1:]
             df_data = df_raw[cols_data]
         elif self.features == 'S':
             df_data = df_raw[[self.target]]
 
+        # Data debug print
+        print("\n\nInput data:\n")
+        print(df_raw.head())
+        print()
+        print(df_data.head())
+        print("\n")
+
         if self.scale:
+            print("\n\n~> Scaling enabled.")
             train_data = df_data[border1s[0]:border2s[0]]
             self.scaler.fit(train_data.values)
             data = self.scaler.transform(df_data.values)
-            print("~> Scaling enabled.")
         else:
+            print("\n\n~> Scaling disabled.")
             data = df_data.values
-            print("~> Scaling disabled.")
         print(data)
+        print("\n\n")
 
         df_stamp = df_raw[['date']][border1:border2]
         df_stamp['date'] = pd.to_datetime(df_stamp.date)
