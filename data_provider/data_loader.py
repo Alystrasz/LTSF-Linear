@@ -138,6 +138,24 @@ class Dataset_ETT_minute(Dataset):
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
 
+        # Test using whole dataset
+        # total_length = 69680
+        # b0 = 0
+        # b1 = int(total_length * 0.6)
+        # b2 = b1 + int(total_length * 0.2)
+        # b3 = total_length
+
+        # border1s = [
+        #     b0,
+        #     b1 - self.seq_len,
+        #     b2 - self.seq_len
+        # ]
+        # border2s = [
+        #     b1,
+        #     b2,
+        #     b3
+        # ]
+
         if self.features == 'M' or self.features == 'MS':
             cols_data = df_raw.columns[1:]
             df_data = df_raw[cols_data]
@@ -197,7 +215,7 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
 
     def __init__(self, root_path, flag='train', size=None,
                  features='S', data_path='ETTm1.csv',
-                 target='OT', scale=True, timeenc=0, freq='t', train_only=False,
+                 target='OT', scale=False, timeenc=0, freq='t', train_only=False,
                  args={}):
 
         print(f"\nLoading dataset for {flag} purpose.")
@@ -243,10 +261,45 @@ class Dataset_Compressed_ETT_minute(Dataset_ETT_minute):
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
 
-        border1s = [0, 12 * 30 * 24 * 4 - self.seq_len, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4 - self.seq_len]
-        border2s = [12 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 4 * 30 * 24 * 4, 12 * 30 * 24 * 4 + 8 * 30 * 24 * 4]
+        border1s = [
+            0,
+            12 * 30 * 24 * 4 - self.seq_len,
+            12 * 30 * 24 * 4 + 4 * 30 * 24 * 4 - self.seq_len
+        ]
+        border2s = [
+            12 * 30 * 24 * 4,
+            12 * 30 * 24 * 4 + 4 * 30 * 24 * 4,
+            12 * 30 * 24 * 4 + 8 * 30 * 24 * 4
+        ]
+
+        # Test using whole dataset
+        # total_length = 69680
+        # b0 = 0
+        # b1 = int(total_length * 0.6)
+        # b2 = b1 + int(total_length * 0.2)
+        # b3 = total_length
+
+        # border1s = [
+        #     b0,
+        #     b1 - self.seq_len,
+        #     b2 - self.seq_len
+        # ]
+        # border2s = [
+        #     b1,
+        #     b2,
+        #     b3
+        # ]
+
+
         border1 = border1s[self.set_type]
         border2 = border2s[self.set_type]
+
+        print(border1s)
+        print(border1)
+        print("--")
+        print(border2s)
+        print(border2)
+        print("==")
 
         # Compression step
         #df_raw = self.compress_data(df_raw)
