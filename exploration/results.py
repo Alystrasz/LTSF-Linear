@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 import os
 import re
@@ -63,7 +64,7 @@ def parse_log_file(path):
 
     return result
 
-def parse_directory(dir_path):
+def parse_directory(dir_path, print=True):
     results = []
     for file in os.listdir(dir_path):
         file_path = os.path.join(dir_path, file)
@@ -71,17 +72,50 @@ def parse_directory(dir_path):
     df = pd.DataFrame(results)
     df = df.sort_values('divide_dataset_size')
     df = df.drop('divide_dataset_size', axis=1)
-    print(df.to_string(index=False))
+
+    if print == True:
+        print(df.to_string(index=False))
+
+    return df
+
+def compare_benchmarks(dir1, dir2):
+    results1 = parse_directory(dir1, False)
+    results2 = parse_directory(dir2, False)
+
+    # Remove trailing "/" from dir names if needed
+    if dir1[-1] == "/":
+        dir1 = dir1[:-1]
+    if dir2[-1] == "/":
+        dir2 = dir2[:-1]
+
+    # Draw chart
+    fig = plt.figure()
+
+    x = results1["train_len"] + results1["val_len"]
+    plt.plot(x, results1["mse"], label=os.path.basename(dir1))
+    plt.plot(x, results2["mse"], label=os.path.basename(dir2))
+
+    ## Display points counts in decreasing order
+    plt.gca().invert_xaxis()
+
+    plt.title('MSE comparison between two benchmarks')
+    plt.ylabel('MSE')
+    plt.xlabel('Points count (train+val dataset length)')
+    plt.legend()
+    plt.show()
 
 # Main
-if len(sys.argv) != 2:
-    raise Exception("Wrong format:\n\tpython exploration/results.py path/to/log")
+l = len(sys.argv)
+if l != 2 and l != 3:
+    raise Exception("Wrong format:\n\tpython exploration/results.py path/to/log\n\tpython exploration/results path/to/log/dir1 path/to/log/dir2")
 path = sys.argv[1]
 
 if os.path.isfile(path):
     result = parse_log_file(path)
     print(result)
-elif os.path.isdir(path):
+elif l == 2 and os.path.isdir(path):
     parse_directory(path)
+elif l == 3:
+    compare_benchmarks(sys.argv[1], sys.argv[2])
 else:
     raise Exception("Input path is not a file neither a directory (?).")
